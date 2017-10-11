@@ -1,5 +1,11 @@
 ---
 # This playbook will install mysql and create db user and give permissions.
+- name: contraseña root para MySQL
+  debconf:
+   name: mysql-server
+   question: mysql-server/root_password
+   value: "000000"
+   vtype: password
 
 - name: Install Mysql package
   apt: name={{ item }} state=installed
@@ -7,16 +13,17 @@
    - mysql-server
    - MySQL-python
    # no entiendo para que utilizan estas librerias pero leo que son librerias de ubuntus
-   - libselinux-python
-   - libsemanage-python
-
-- name: Configure SELinux to start mysql on any port
-  seboolean: name=mysql_connect_any state=true persistent=yes
-  when: sestatus.rc != 0
-
+  #- libselinux-python
+   #- libsemanage-python
+   
 - name: Create Mysql configuration file
-  template: src=my.cnf.j2 dest=/etc/my.cnf
-  notify:
+  template: 
+    src=my.cnf.j2 
+    dest: /etc/mysql/mysql.conf.d/mysqld.cnf
+    mode: 0644
+    owner: root
+    group:root
+ notify: 
   - restart mysql
 
 - name: Start Mysql Service
@@ -28,6 +35,8 @@
   notify: restart iptables
 
 - name: Create Application Database
+  login_user:root
+  login_password:000000
   mysql_db: name={{ dbname }} state=present
 
 - name: Create Application DB User
