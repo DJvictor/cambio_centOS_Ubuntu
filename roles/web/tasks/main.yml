@@ -1,3 +1,9 @@
 ---
-- include: install_httpd.yml
-- include: copy_code.yml
+#instalamos el apache con la version latest que es la version base y le damos el permiso para que se actualice 
+- name: install apache2
+  apt: name=apache2 update_cache=yes state=latest
+# habilitamos el modo de reescribir para que las nuevas actualizaciones y reiniciamos nuevamente el apache2 para que se monten las actualizaciones a nuestro servidor
+- name: enabled mod_rewrite
+  apache2_module: name=rewrite state=present
+      notify:
+        - restart apache2
