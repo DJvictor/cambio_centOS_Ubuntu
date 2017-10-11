@@ -2,10 +2,11 @@
 # This playbook will install mysql and create db user and give permissions.
 
 - name: Install Mysql package
-  yum: name={{ item }} state=installed
+  apt: name={{ item }} state=installed
   with_items:
    - mysql-server
    - MySQL-python
+   # no entiendo para que utilizan estas librerias pero leo que son librerias de ubuntus
    - libselinux-python
    - libsemanage-python
 
